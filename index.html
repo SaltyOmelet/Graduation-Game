@@ -68,7 +68,7 @@ button{
 #qr{
   display:none;
   margin-top:30px;
-  text-align:center;
+  text-align:left;
 }
 
 .qr-image{
@@ -130,7 +130,7 @@ let correct = "4 5 7 12";
 
 if(input === correct){
  document.getElementById("result").innerText="";
- document.getElementById("qr").style.display="inline-block";
+ document.getElementById("qr").style.display="block";
 }else{
  document.getElementById("result").innerText="Incorrect. Check your solutions.";
 }
