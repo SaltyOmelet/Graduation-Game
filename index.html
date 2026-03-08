@@ -83,10 +83,7 @@ button{
 <div class="container">
 
 <div class="header">
-<h1>Final Examination</h1>
-<p>Mathematics Department</p>
-<p>Time Allowed: 5 Minutes</p>
-<p>No calculators. Show your work.</p>
+<h1>Game 1</h1>
 </div>
 
 <div class="question">
@@ -94,8 +91,10 @@ Solve for <strong>x</strong>.
 </div>
 
 <div class="equations">
-<p>1) x² - 5x + 6 = 0</p>
-<p>2) x² - x - 12 = 0</p>
+<p>1) 4x = 28</p>
+<p>2) x - 9 = 3</p>
+<p>3) 2x + 6 = 14</p>
+<p>4) 3x - 5 = 10</p>
 </div>
 
 <p>Enter ALL values of x from smallest to largest.</p>
@@ -107,10 +106,14 @@ Solve for <strong>x</strong>.
 <div id="result"></div>
 
 <div id="qr">
-<p><strong>Correct.</strong></p>
+<p><strong>Nice.</strong></p>
 <p>You're still playing.</p>
 
-<img class="qr-image" src="QR_CODE_HERE.png" />
+<p>Sometimes games hide in plain sight.</p>
+<p>Even now people are watching</p>
+<p>Everyone assumes nothing is happening.</p>
+<p>Keeping looking.</p>
+<p>🦁🦅</p>
 
 </div>
 
@@ -123,7 +126,7 @@ let input = document.getElementById("answer").value
 .replace(/,/g,' ')
 .trim();
 
-let correct = "-3 2 3 4";
+let correct = "4 5 7 12";
 
 if(input === correct){
  document.getElementById("result").innerText="";
