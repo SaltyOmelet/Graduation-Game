@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Final Assessment</title>
+<style>
+body{
+  font-family: "Times New Roman", serif;
+  background:#f5f5f5;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.container{
+  background:white;
+  padding:40px;
+  width:600px;
+  border:1px solid #ccc;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+.header{
+  text-align:center;
+  margin-bottom:30px;
+}
+.header h1{
+  margin:0;
+  font-size:24px;
+}
+.header p{
+  margin:4px 0;
+  font-size:14px;
+}
+.question{
+  margin-top:20px;
+  font-size:18px;
+}
+.equations{
+  margin:20px 0;
+  font-size:20px;
+}
+input{
+  padding:10px;
+  width:100%;
+  font-size:16px;
+  margin-top:10px;
+}
+button{
+  margin-top:20px;
+  padding:10px 20px;
+  font-size:16px;
+  cursor:pointer;
+}
+#result{
+  margin-top:20px;
+  font-weight:bold;
+}
+#qr{
+  display:none;
+  margin-top:20px;
+  text-align:center;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>Final Examination</h1>
+<p>Mathematics Department</p>
+<p>Time Allowed: 5 Minutes</p>
+<p>No calculators. Show your work.</p>
+</div>
+
+<div class="question">
+Solve for <strong>x</strong>.
+</div>
+
+<div class="equations">
+<p>1) x² - 5x + 6 = 0</p>
+<p>2) x² - x - 12 = 0</p>
+</div>
+
+<p>Enter ALL values of x from smallest to largest.</p>
+
+<input id="answer" placeholder="Example: -3 2 3 4" />
+
+<button onclick="checkAnswer()">Submit</button>
+
+<div id="result"></div>
+
+<div id="qr">
+<p>Correct.</p>
+<p>You're still playing.</p>
+<img src="QR_CODE_HERE.png" width="200" />
+</div>
+
+</div>
+
+<script>
+function checkAnswer(){
+
+let input = document.getElementById("answer").value
+.replace(/,/g,' ')
+.trim();
+
+let correct = "-3 2 3 4";
+
+if(input === correct){
+ document.getElementById("result").innerText="";
+ document.getElementById("qr").style.display="block";
+}else{
+ document.getElementById("result").innerText="Incorrect. Check your solutions.";
+}
+}
+</script>
+
+</body>
+</html>
