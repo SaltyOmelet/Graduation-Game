@@ -11,12 +11,14 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
+  min-height:100vh;
+  margin:0;
 }
 .container{
   background:white;
   padding:40px;
-  width:600px;
+  max-width:600px;
+  width:90%;
   border:1px solid #ccc;
   box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
@@ -40,27 +42,40 @@ body{
   margin:20px 0;
   font-size:20px;
 }
+
+/* Mobile-friendly input */
 input{
-  padding:10px;
+  padding:14px;
   width:100%;
-  font-size:16px;
+  font-size:18px;
   margin-top:10px;
+  box-sizing:border-box;
 }
+
 button{
   margin-top:20px;
-  padding:10px 20px;
+  padding:12px 20px;
   font-size:16px;
   cursor:pointer;
+  width:100%;
 }
+
 #result{
   margin-top:20px;
   font-weight:bold;
 }
+
 #qr{
   display:none;
-  margin-top:20px;
+  margin-top:30px;
   text-align:center;
 }
+
+.qr-image{
+  width:260px;
+  max-width:100%;
+}
+
 </style>
 </head>
 <body>
@@ -92,9 +107,11 @@ Solve for <strong>x</strong>.
 <div id="result"></div>
 
 <div id="qr">
-<p>Correct.</p>
+<p><strong>Correct.</strong></p>
 <p>You're still playing.</p>
-<img src="QR_CODE_HERE.png" width="200" />
+
+<img class="qr-image" src="QR_CODE_HERE.png" />
+
 </div>
 
 </div>
