@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Memory Test</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    background:#f5f5f5;
+}
+
+h1{
+    margin-top:30px;
+}
+
+#grid{
+    width:320px;
+    margin:30px auto;
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:8px;
+}
+
+.square{
+    width:70px;
+    height:70px;
+    background:#ccc;
+    border-radius:8px;
+}
+
+/* Memory flash animation */
+.square.active{
+    background:#4CAF50;
+}
+
+/* Tap feedback animation */
+.square.tap{
+    transform: scale(0.9);
+    background:#888;
+    transition: transform 0.1s, background 0.1s;
+}
+
+button{
+    padding:12px 20px;
+    font-size:16px;
+}
+
+#message{
+    margin-top:15px;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Memory Test</h1>
+<p>Watch the sequence carefully.</p>
+
+<button onclick="startGame()">Start</button>
+
+<div id="grid"></div>
+
+<p id="message"></p>
+
+<script>
+
+let grid = document.getElementById("grid");
+let message = document.getElementById("message");
+
+let sequence = [];
+let playerSequence = [];
+let level = 1;
+
+const levelLengths = {
+    1:3,
+    2:5,
+    3:7
+};
+
+for(let i=0;i<16;i++){
+    let square = document.createElement("div");
+    square.classList.add("square");
+    square.dataset.index = i;
+
+    square.addEventListener("click", playerClick);
+
+    grid.appendChild(square);
+}
+
+function startGame(){
+
+    playerSequence = [];
+    sequence = [];
+
+    let length = levelLengths[level];
+
+    for(let i=0;i<length;i++){
+        sequence.push(Math.floor(Math.random()*16));
+    }
+
+    playSequence();
+
+}
+
+function playSequence(){
+
+    message.innerText = "Memorize the pattern";
+
+    let i = 0;
+
+    let interval = setInterval(()=>{
+
+        let squares = document.querySelectorAll(".square");
+
+        squares.forEach(s=>s.classList.remove("active"));
+
+        squares[sequence[i]].classList.add("active");
+
+        setTimeout(()=>{
+            squares[sequence[i]].classList.remove("active");
+        },500);
+
+        i++;
+
+        if(i >= sequence.length){
+            clearInterval(interval);
+            message.innerText = "Your turn";
+        }
+
+    },800);
+
+}
+
+function playerClick(e){
+
+    if(message.innerText !== "Your turn") return;
+
+    let index = Number(e.target.dataset.index);
+
+    let square = e.target;
+
+    /* Tap animation */
+    square.classList.add("tap");
+
+    setTimeout(()=>{
+        square.classList.remove("tap");
+    },150);
+
+    playerSequence.push(index);
+
+    let current = playerSequence.length-1;
+
+    if(playerSequence[current] !== sequence[current]){
+        message.innerText = "Incorrect. Restarting...";
+        level = 1;
+        setTimeout(startGame,1500);
+        return;
+    }
+
+    if(playerSequence.length === sequence.length){
+
+        if(level === 3){
+
+            message.innerText = "Success. You're still playing.";
+            return;
+
+        }
+
+        level++;
+        message.innerText = "Correct. Level " + level;
+
+        setTimeout(startGame,1500);
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
