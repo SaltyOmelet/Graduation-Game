@@ -131,10 +131,20 @@ function playSequence(){
 
         if(i >= sequence.length){
             clearInterval(interval);
-            message.innerText = "Your turn";
+
+            // make sure ALL squares turn off before player starts
+            setTimeout(()=>{
+                document.querySelectorAll(".square").forEach(s=>{
+                    s.classList.remove("active");
+                });
+
+                message.innerText = "Your turn";
+            },600);
         }
 
     },800);
+
+}
 
 }
 
