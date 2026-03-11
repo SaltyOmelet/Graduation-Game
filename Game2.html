@@ -81,7 +81,7 @@ let level = 1;
 const levelLengths = {
     1:3,
     2:5,
-    3:7
+    3:3
 };
 
 for(let i=0;i<16;i++){
@@ -176,9 +176,24 @@ function playerClick(e){
 
         if(level === 3){
 
-            message.innerText = "Success. You're still playing.";
-            return;
-
+        message.innerText = `Success. You're Still Playing.
+        
+        The Game Continues.
+        
+        I do not toss the dough,
+        I command where it goes.
+        
+        Once I studied where jackets swarm,
+        where gold and white winds blow.
+        
+        My heir swings for the fences,
+        chasing fastballs in the sun.
+        
+        And beside me walks a flame-haired queen.
+        Find me to conquer the next game.`;
+        
+        return;
+        
         }
 
         level++;
