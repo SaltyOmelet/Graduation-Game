@@ -134,6 +134,7 @@ let gameOver = false;
 let playerTurn = true;
 let aiShots = new Set();   // tracks all AI guesses
 let targetQueue = [];      // stores next smart targets
+let playerHealth = 8;
 
 const log = document.getElementById("log");
 const gameDiv = document.getElementById("game");
@@ -259,7 +260,14 @@ function aiTurn() {
   let isHit = Math.random() < 0.35;
 
   if (isHit) {
-    log.innerText = "🏹 The King's army strikes true!";
+    playerHealth--;
+
+    log.innerText = `🏹 The King's army strikes true! You have ${playerHealth} health remaining.`;
+
+    if (playerHealth <= 0) {
+      loseGame();
+      return;
+    }
 
     // Add surrounding tiles to target queue
     let directions = [
@@ -305,6 +313,19 @@ function winGame() {
   }, 500);
 }
 
+function loseGame() {
+  gameOver = true;
+
+  setTimeout(() => {
+    log.innerHTML = `
+    The battlefield falls silent...<br><br>
+    You have been defeated.<br><br>
+    The King remains.<br><br>
+    Try again.
+    `;
+  }, 500);
+} 
+ 
 function restartGame() {
   initGame();
   log.innerText = "Choose your first strike...";
