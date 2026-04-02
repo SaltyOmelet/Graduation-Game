@@ -248,8 +248,10 @@ function aiTurn() {
     do {
       r = Math.floor(Math.random() * size);
       c = Math.floor(Math.random() * size);
-    } while (aiShots.has(`${r},${c}`) || (r + c) % 2 !== 0   // 🔥 only hits every other square
-  }
+    } while (
+      aiShots.has(`${r},${c}`) || 
+      (r + c) % 2 !== 0
+    );
 
   aiShots.add(`${r},${c}`);
 
