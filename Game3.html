@@ -134,7 +134,8 @@ let gameOver = false;
 let playerTurn = true;
 let aiShots = new Set();   // tracks all AI guesses
 let targetQueue = [];      // stores next smart targets
-let playerHealth = 8;
+let playerGrid = [];
+let playerShipsRemaining = 9;
 
 const log = document.getElementById("log");
 const gameDiv = document.getElementById("game");
@@ -142,11 +143,16 @@ const turnIndicator = document.getElementById("turnIndicator");
 
 function initGame() {
   grid = Array(size).fill().map(() => Array(size).fill(0));
+  playerGrid = Array(size).fill().map(() => Array(size).fill(0));
   hits = 0;
+  playerShipsRemaining = 9;
   gameOver = false;
   playerTurn = true;
+  aiShots = new Set();
+  targetQueue = [];
   gameDiv.innerHTML = "";
-  placeShips();
+  placeShips(grid);        // enemy board
+  placeShips(playerGrid);  // 🔥 player board
   drawGrid();
   updateTurnUI();
 }
@@ -155,7 +161,7 @@ function updateTurnUI() {
   turnIndicator.innerText = playerTurn ? "🟢 Your Turn" : "🔴 Enemy Turn";
 }
 
-function placeShips() {
+function placeShips(targetGrid) {
   let shipSizes = [3, 2, 2, 1, 1];
 
   shipSizes.forEach(size => {
@@ -163,8 +169,8 @@ function placeShips() {
 
     while (!placed) {
       let dir = Math.random() < 0.5 ? "H" : "V";
-      let row = Math.floor(Math.random() * 6);
-      let col = Math.floor(Math.random() * 6);
+      let row = Math.floor(Math.random() * size);
+      let col = Math.floor(Math.random() * size);
 
       let fits = true;
       let coords = [];
@@ -173,7 +179,7 @@ function placeShips() {
         let r = row + (dir === "V" ? i : 0);
         let c = col + (dir === "H" ? i : 0);
 
-        if (r >= 6 || c >= 6 || grid[r][c] === 1) {
+        if (r >= size || c >= size || targetGrid[r][c] === 1) {
           fits = false;
           break;
         }
@@ -181,7 +187,7 @@ function placeShips() {
       }
 
       if (fits) {
-        coords.forEach(([r, c]) => grid[r][c] = 1);
+        coords.forEach(([r, c]) => targetGrid[r][c] = 1);
         placed = true;
       }
     }
@@ -256,13 +262,14 @@ function aiTurn() {
 
   aiShots.add(`${r},${c}`);
 
-  // 🎲 Simulate "player board" (for now we fake hit chance)
-  let isHit = Math.random() < 0.35;
+  // AI is now playing against the player on their board 
+  let isHit = playerGrid[r][c] === 1;
 
   if (isHit) {
-    playerHealth--;
+    playerGrid[r][c] = -1; // mark as hit
+    playerShipsRemaining--;
 
-    log.innerText = `🏹 The King's army strikes true! You have ${playerHealth} health remaining.`;
+    log.innerText = `🏹 The King's army strikes true! You have ${playerShipsRemaining} health remaining.`;
 
     if (playerHealth <= 0) {
       loseGame();
@@ -287,6 +294,12 @@ function aiTurn() {
       }
     });
 
+   // 🔥 LOSE CONDITION
+     if (playerShipsRemaining <= 0) {
+       loseGame();
+       return;
+     }
+   
   } else {
     log.innerText = "Their forces search blindly...";
   }
