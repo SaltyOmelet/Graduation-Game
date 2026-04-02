@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The King's Battlefield</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f4e7c5;
+  }
+
+  h1 {
+    margin-top: 10px;
+  }
+
+  #game {
+    display: grid;
+    grid-template-columns: repeat(6, 50px);
+    gap: 5px;
+    justify-content: center;
+    margin: 20px auto;
+  }
+
+  .cell {
+    width: 50px;
+    height: 50px;
+    background: #d9c7a1;
+    border: 1px solid #555;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .hit {
+    background: #c0392b;
+    color: white;
+  }
+
+  .miss {
+    background: #7f8c8d;
+    color: white;
+  }
+
+  #log {
+    margin-top: 20px;
+    min-height: 60px;
+    font-style: italic;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+
+<h1>⚔️ The King's Battlefield ⚔️</h1>
+<p>Defeat the King’s Army.</p>
+
+<div id="game"></div>
+
+<div id="log">Choose your first strike...</div>
+
+<button onclick="restartGame()">Restart</button>
+
+<script>
+const size = 6;
+let grid = [];
+let ships = [];
+let hits = 0;
+let totalShipCells = 9;
+let gameOver = false;
+
+const log = document.getElementById("log");
+const gameDiv = document.getElementById("game");
+
+// Initialize grid
+function initGame() {
+  grid = Array(size).fill().map(() => Array(size).fill(0));
+  ships = [];
+  hits = 0;
+  gameOver = false;
+  gameDiv.innerHTML = "";
+  placeShips();
+  drawGrid();
+}
+
+// Place ships (simple random)
+function placeShips() {
+  let shipSizes = [3, 2, 2, 1, 1];
+
+  shipSizes.forEach(size => {
+    let placed = false;
+
+    while (!placed) {
+      let dir = Math.random() < 0.5 ? "H" : "V";
+      let row = Math.floor(Math.random() * 6);
+      let col = Math.floor(Math.random() * 6);
+
+      let fits = true;
+      let coords = [];
+
+      for (let i = 0; i < size; i++) {
+        let r = row + (dir === "V" ? i : 0);
+        let c = col + (dir === "H" ? i : 0);
+
+        if (r >= 6 || c >= 6 || grid[r][c] === 1) {
+          fits = false;
+          break;
+        }
+        coords.push([r, c]);
+      }
+
+      if (fits) {
+        coords.forEach(([r, c]) => grid[r][c] = 1);
+        ships.push(coords);
+        placed = true;
+      }
+    }
+  });
+}
+
+// Draw board
+function drawGrid() {
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      let cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+
+      cell.addEventListener("click", handleClick);
+
+      gameDiv.appendChild(cell);
+    }
+  }
+}
+
+// Handle player move
+function handleClick(e) {
+  if (gameOver) return;
+
+  let cell = e.target;
+  let r = parseInt(cell.dataset.row);
+  let c = parseInt(cell.dataset.col);
+
+  if (cell.classList.contains("hit") || cell.classList.contains("miss")) return;
+
+  if (grid[r][c] === 1) {
+    cell.classList.add("hit");
+    cell.innerHTML = "⚔️";
+    hits++;
+    log.innerText = "A direct strike! A unit has fallen.";
+  } else {
+    cell.classList.add("miss");
+    cell.innerHTML = "🌫️";
+    log.innerText = "Your attack found nothing...";
+  }
+
+  if (hits === totalShipCells) {
+    winGame();
+    return;
+  }
+
+  setTimeout(aiTurn, 800);
+}
+
+// AI turn (simple + slightly smart)
+let lastHit = null;
+
+function aiTurn() {
+  if (gameOver) return;
+
+  let r, c;
+
+  if (lastHit) {
+    let options = [
+      [lastHit[0] + 1, lastHit[1]],
+      [lastHit[0] - 1, lastHit[1]],
+      [lastHit[0], lastHit[1] + 1],
+      [lastHit[0], lastHit[1] - 1]
+    ];
+
+    options = options.filter(([x, y]) => x >= 0 && y >= 0 && x < size && y < size);
+
+    let choice = options[Math.floor(Math.random() * options.length)];
+    r = choice[0];
+    c = choice[1];
+    lastHit = null;
+  } else {
+    r = Math.floor(Math.random() * size);
+    c = Math.floor(Math.random() * size);
+  }
+
+  // Simulate hit chance (not tracking player grid, just flavor)
+  if (Math.random() < 0.3) {
+    log.innerText = "🏹 The King's army strikes true!";
+    lastHit = [r, c];
+  } else {
+    log.innerText = "Their forces search blindly...";
+  }
+}
+
+// Win sequence
+function winGame() {
+  gameOver = true;
+
+  setTimeout(() => {
+    log.innerHTML = `
+    The battlefield is quiet...<br><br>
+    But the war is not over.<br><br>
+    You have learned to read the field.<br><br>
+    <strong>Mark what you conquered:</strong><br><br>
+    Coordinates: <strong>Row 3, Column 5</strong><br><br>
+    Find the wall.
+    `;
+  }, 500);
+}
+
+// Restart
+function restartGame() {
+  initGame();
+  log.innerText = "Choose your first strike...";
+}
+
+// Start game
+initGame();
+</script>
+
+</body>
+</html>
