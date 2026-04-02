@@ -164,18 +164,18 @@ function updateTurnUI() {
 function placeShips(targetGrid) {
   let shipSizes = [3, 2, 2, 1, 1];
 
-  shipSizes.forEach(size => {
+  shipSizes.forEach(shipSize => {  // ✅ renamed
     let placed = false;
 
     while (!placed) {
       let dir = Math.random() < 0.5 ? "H" : "V";
-      let row = Math.floor(Math.random() * size);
+      let row = Math.floor(Math.random() * size);  // ✅ uses grid size
       let col = Math.floor(Math.random() * size);
 
       let fits = true;
       let coords = [];
 
-      for (let i = 0; i < size; i++) {
+      for (let i = 0; i < shipSize; i++) {
         let r = row + (dir === "V" ? i : 0);
         let c = col + (dir === "H" ? i : 0);
 
