@@ -132,6 +132,8 @@ let hits = 0;
 let totalShipCells = 9;
 let gameOver = false;
 let playerTurn = true;
+let aiShots = new Set();   // tracks all AI guesses
+let targetQueue = [];      // stores next smart targets
 
 const log = document.getElementById("log");
 const gameDiv = document.getElementById("game");
@@ -236,27 +238,45 @@ function aiTurn() {
 
   let r, c;
 
-  if (lastHit) {
-    let options = [
-      [lastHit[0] + 1, lastHit[1]],
-      [lastHit[0] - 1, lastHit[1]],
-      [lastHit[0], lastHit[1] + 1],
-      [lastHit[0], lastHit[1] - 1]
-    ];
-
-    options = options.filter(([x, y]) => x >= 0 && y >= 0 && x < size && y < size);
-    let choice = options[Math.floor(Math.random() * options.length)];
-    r = choice[0];
-    c = choice[1];
-    lastHit = null;
+  // 🎯 TARGET MODE (if we have queued targets)
+  if (targetQueue.length > 0) {
+    let next = targetQueue.shift();
+    r = next[0];
+    c = next[1];
   } else {
-    r = Math.floor(Math.random() * size);
-    c = Math.floor(Math.random() * size);
+    // 🔍 HUNT MODE (random but not repeated)
+    do {
+      r = Math.floor(Math.random() * size);
+      c = Math.floor(Math.random() * size);
+    } while (aiShots.has(`${r},${c}`) || (r + c) % 2 !== 0   // 🔥 only hits every other square
   }
 
-  if (Math.random() < 0.3) {
+  aiShots.add(`${r},${c}`);
+
+  // 🎲 Simulate "player board" (for now we fake hit chance)
+  let isHit = Math.random() < 0.35;
+
+  if (isHit) {
     log.innerText = "🏹 The King's army strikes true!";
-    lastHit = [r, c];
+
+    // Add surrounding tiles to target queue
+    let directions = [
+      [r + 1, c],
+      [r - 1, c],
+      [r, c + 1],
+      [r, c - 1]
+    ];
+
+    directions.forEach(([nr, nc]) => {
+      if (
+        nr >= 0 && nc >= 0 &&
+        nr < size && nc < size &&
+        !aiShots.has(`${nr},${nc}`)
+      ) {
+        targetQueue.push([nr, nc]);
+      }
+    });
+
   } else {
     log.innerText = "Their forces search blindly...";
   }
