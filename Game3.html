@@ -3,46 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <title>The King's Battlefield</title>
+
 <style>
   body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background: #f4e7c5;
+    margin: 0;
+    color: #2c2c2c;
+    background: url('https://www.transparenttextures.com/patterns/aged-paper.png');
   }
 
   h1 {
+    margin-top: 15px;
+  }
+
+  #turnIndicator {
+    font-weight: bold;
     margin-top: 10px;
   }
 
+  #gameContainer {
+    position: relative;
+    width: 320px;
+    margin: 20px auto;
+    padding: 10px;
+    background: rgba(0,0,0,0.15);
+    border: 3px solid #5a4a2f;
+  }
+
+  /* Medieval battlefield feel */
+  #gameContainer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Old_map_background.jpg/800px-Old_map_background.jpg');
+    background-size: cover;
+    opacity: 0.4;
+    z-index: 0;
+  }
+
   #game {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: repeat(6, 50px);
-    gap: 5px;
+    gap: 4px;
     justify-content: center;
-    margin: 20px auto;
   }
 
   .cell {
     width: 50px;
     height: 50px;
-    background: #d9c7a1;
-    border: 1px solid #555;
+    background: rgba(217, 199, 161, 0.8);
+    border: 1px solid #3e3e3e;
     cursor: pointer;
     font-size: 18px;
   }
 
   .hit {
-    background: #c0392b;
+    background: #8b0000;
     color: white;
   }
 
   .miss {
-    background: #7f8c8d;
+    background: #555;
     color: white;
   }
 
   #log {
-    margin-top: 20px;
+    margin-top: 15px;
     min-height: 60px;
     font-style: italic;
   }
@@ -54,12 +83,16 @@
   }
 </style>
 </head>
+
 <body>
 
 <h1>⚔️ The King's Battlefield ⚔️</h1>
-<p>Defeat the King’s Army.</p>
 
-<div id="game"></div>
+<div id="turnIndicator">Your Turn</div>
+
+<div id="gameContainer">
+  <div id="game"></div>
+</div>
 
 <div id="log">Choose your first strike...</div>
 
@@ -68,26 +101,30 @@
 <script>
 const size = 6;
 let grid = [];
-let ships = [];
 let hits = 0;
 let totalShipCells = 9;
 let gameOver = false;
+let playerTurn = true;
 
 const log = document.getElementById("log");
 const gameDiv = document.getElementById("game");
+const turnIndicator = document.getElementById("turnIndicator");
 
-// Initialize grid
 function initGame() {
   grid = Array(size).fill().map(() => Array(size).fill(0));
-  ships = [];
   hits = 0;
   gameOver = false;
+  playerTurn = true;
   gameDiv.innerHTML = "";
   placeShips();
   drawGrid();
+  updateTurnUI();
 }
 
-// Place ships (simple random)
+function updateTurnUI() {
+  turnIndicator.innerText = playerTurn ? "🟢 Your Turn" : "🔴 Enemy Turn";
+}
+
 function placeShips() {
   let shipSizes = [3, 2, 2, 1, 1];
 
@@ -115,14 +152,12 @@ function placeShips() {
 
       if (fits) {
         coords.forEach(([r, c]) => grid[r][c] = 1);
-        ships.push(coords);
         placed = true;
       }
     }
   });
 }
 
-// Draw board
 function drawGrid() {
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
@@ -130,17 +165,14 @@ function drawGrid() {
       cell.classList.add("cell");
       cell.dataset.row = r;
       cell.dataset.col = c;
-
       cell.addEventListener("click", handleClick);
-
       gameDiv.appendChild(cell);
     }
   }
 }
 
-// Handle player move
 function handleClick(e) {
-  if (gameOver) return;
+  if (gameOver || !playerTurn) return;
 
   let cell = e.target;
   let r = parseInt(cell.dataset.row);
@@ -164,10 +196,12 @@ function handleClick(e) {
     return;
   }
 
-  setTimeout(aiTurn, 800);
+  playerTurn = false;
+  updateTurnUI();
+
+  setTimeout(aiTurn, 1000);
 }
 
-// AI turn (simple + slightly smart)
 let lastHit = null;
 
 function aiTurn() {
@@ -184,7 +218,6 @@ function aiTurn() {
     ];
 
     options = options.filter(([x, y]) => x >= 0 && y >= 0 && x < size && y < size);
-
     let choice = options[Math.floor(Math.random() * options.length)];
     r = choice[0];
     c = choice[1];
@@ -194,16 +227,20 @@ function aiTurn() {
     c = Math.floor(Math.random() * size);
   }
 
-  // Simulate hit chance (not tracking player grid, just flavor)
   if (Math.random() < 0.3) {
     log.innerText = "🏹 The King's army strikes true!";
     lastHit = [r, c];
   } else {
     log.innerText = "Their forces search blindly...";
   }
+
+  setTimeout(() => {
+    playerTurn = true;
+    updateTurnUI();
+    log.innerText += " Your move...";
+  }, 800);
 }
 
-// Win sequence
 function winGame() {
   gameOver = true;
 
@@ -219,13 +256,11 @@ function winGame() {
   }, 500);
 }
 
-// Restart
 function restartGame() {
   initGame();
   log.innerText = "Choose your first strike...";
 }
 
-// Start game
 initGame();
 </script>
 
