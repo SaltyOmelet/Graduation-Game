@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The King's Battlefield</title>
 
 <style>
@@ -14,24 +15,26 @@
   }
 
   h1 {
-    margin-top: 15px;
+    margin-top: 10px;
+    font-size: 1.5rem;
   }
 
   #turnIndicator {
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 5px;
   }
 
+  /* 🔥 RESPONSIVE CONTAINER */
   #gameContainer {
     position: relative;
-    width: 320px;
-    margin: 20px auto;
-    padding: 10px;
+    width: 95vw;              /* takes most of screen width */
+    max-width: 500px;        /* prevents it from getting too big on desktop */
+    margin: 10px auto;
+    padding: 8px;
     background: rgba(0,0,0,0.15);
     border: 3px solid #5a4a2f;
   }
 
-  /* Medieval battlefield feel */
   #gameContainer::before {
     content: "";
     position: absolute;
@@ -42,22 +45,26 @@
     z-index: 0;
   }
 
+  /* 🔥 RESPONSIVE GRID */
   #game {
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: repeat(6, 50px);
+    grid-template-columns: repeat(6, 1fr); /* flexible columns */
     gap: 4px;
-    justify-content: center;
   }
 
+  /* 🔥 SQUARE CELLS THAT SCALE */
   .cell {
-    width: 50px;
-    height: 50px;
+    width: 100%;
+    aspect-ratio: 1 / 1;   /* keeps perfect square */
     background: rgba(217, 199, 161, 0.8);
     border: 1px solid #3e3e3e;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .hit {
@@ -71,19 +78,19 @@
   }
 
   #log {
-    margin-top: 15px;
+    margin: 10px;
     min-height: 60px;
     font-style: italic;
+    font-size: 0.95rem;
   }
 
   button {
-    margin-top: 10px;
-    padding: 10px;
-    font-size: 16px;
+    margin-top: 5px;
+    padding: 8px;
+    font-size: 14px;
   }
 </style>
 </head>
-
 <body>
 
 <h1>⚔️ The King's Battlefield ⚔️</h1>
