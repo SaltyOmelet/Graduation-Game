@@ -258,7 +258,7 @@ function aiTurn() {
     } while (
       aiShots.has(`${r},${c}`) || 
       (r + c) % 2 !== 0
-    )};
+    );
 
   aiShots.add(`${r},${c}`);
 
@@ -266,16 +266,11 @@ function aiTurn() {
   let isHit = playerGrid[r][c] === 1;
 
   if (isHit) {
-    playerGrid[r][c] = -1; // mark as hit
+    playerGrid[r][c] = -1;
     playerShipsRemaining--;
-
-    log.innerText = `🏹 The King's army strikes true! You have ${playerShipsRemaining} health remaining.`;
-
-    if (playerHealth <= 0) {
-      loseGame();
-      return;
-    }
-
+  
+    log.innerText = `🏹 The King's army strikes true! Your forces weaken (${playerShipsRemaining} remain).`;
+  
     // Add surrounding tiles to target queue
     let directions = [
       [r + 1, c],
@@ -283,7 +278,7 @@ function aiTurn() {
       [r, c + 1],
       [r, c - 1]
     ];
-
+  
     directions.forEach(([nr, nc]) => {
       if (
         nr >= 0 && nc >= 0 &&
@@ -293,23 +288,22 @@ function aiTurn() {
         targetQueue.push([nr, nc]);
       }
     });
-
-   // 🔥 LOSE CONDITION
-     if (playerShipsRemaining <= 0) {
-       loseGame();
-       return;
-     }
-   
+  
+    if (playerShipsRemaining <= 0) {
+      loseGame();
+      return;
+    }
+  
   } else {
     log.innerText = "Their forces search blindly...";
   }
-
-  setTimeout(() => {
-    playerTurn = true;
-    updateTurnUI();
-    log.innerText += " Your move...";
-  }, 800);
-}
+  
+    setTimeout(() => {
+      playerTurn = true;
+      updateTurnUI();
+      log.innerText += " Your move...";
+    }, 800);
+  }
 
 function winGame() {
   gameOver = true;
