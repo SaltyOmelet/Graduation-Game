@@ -2,48 +2,99 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Maze</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Are You Playing The Game? - Maze</title>
 
 <style>
   body {
     font-family: Arial;
     text-align: center;
+    margin: 0;
     background: #111;
     color: white;
   }
 
-  canvas {
-    border: 2px solid white;
-    margin-top: 20px;
+  #menu, #gameUI {
+    display: none;
+  }
+
+  #menu {
+    display: block;
+    padding-top: 100px;
   }
 
   button {
-    padding: 10px 20px;
+    padding: 15px 25px;
     margin: 10px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+  }
+
+  canvas {
+    border: 2px solid white;
+    margin-top: 10px;
+    max-width: 95vw;
+  }
+
+  #controls {
+    margin-top: 15px;
+  }
+
+  .arrow-btn {
+    width: 70px;
+    height: 70px;
+    font-size: 24px;
+    margin: 5px;
+  }
+
+  #instructions {
+    margin-top: 20px;
     font-size: 16px;
+    opacity: 0.8;
   }
 </style>
 </head>
 
 <body>
 
-<h1>Are You Playing The Game?</h1>
-<h2>Choose Your Role</h2>
+<!-- ROLE SELECTION SCREEN -->
+<div id="menu">
+  <h1>Are You Playing The Game?</h1>
+  <h2>Choose Your Role</h2>
 
-<button onclick="startGame('runner')">Runner</button>
-<button onclick="startGame('navigator')">Navigator</button>
+  <button onclick="chooseRole('runner')">Runner</button>
+  <button onclick="chooseRole('navigator')">Navigator</button>
+</div>
 
-<canvas id="gameCanvas" width="500" height="500"></canvas>
+<!-- GAME UI -->
+<div id="gameUI">
+  <h2 id="roleTitle"></h2>
+  <div id="instructions"></div>
+
+  <canvas id="gameCanvas" width="500" height="500"></canvas>
+
+  <!-- MOBILE CONTROLS -->
+  <div id="controls">
+    <div>
+      <button class="arrow-btn" onclick="move('up')">⬆️</button>
+    </div>
+    <div>
+      <button class="arrow-btn" onclick="move('left')">⬅️</button>
+      <button class="arrow-btn" onclick="move('down')">⬇️</button>
+      <button class="arrow-btn" onclick="move('right')">➡️</button>
+    </div>
+  </div>
+</div>
 
 <script>
-
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let role = "";
 let tileSize = 50;
 
-// 1 = wall, 0 = path
+// MAZE DATA
 const maze = [
   [1,1,1,1,1,1,1,1,1,1],
   [1,0,0,0,1,0,0,0,0,1],
@@ -60,36 +111,44 @@ const maze = [
 let player = { x: 1, y: 1 };
 const exit = { x: 8, y: 8 };
 
-function startGame(selectedRole) {
+// ROLE SELECTION
+function chooseRole(selectedRole) {
   role = selectedRole;
-  document.querySelectorAll("button").forEach(b => b.style.display = "none");
+
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("gameUI").style.display = "block";
+
+  const title = document.getElementById("roleTitle");
+  const instructions = document.getElementById("instructions");
+
+  if (role === "runner") {
+    title.innerText = "Runner";
+    instructions.innerText = "You cannot see the maze. Follow your Navigator's instructions to escape.";
+  } else {
+    title.innerText = "Navigator";
+    instructions.innerText = "Guide the Runner using the map. You cannot move.";
+  }
+
   draw();
 }
 
-// DRAW FUNCTION
+// DRAW LOOP
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (role === "navigator") {
-    drawFullMaze();
-  } else if (role === "runner") {
-    drawDarkMaze();
-  }
+  if (role === "navigator") drawFullMaze();
+  if (role === "runner") drawDarkMaze();
 
   drawPlayer();
 
   requestAnimationFrame(draw);
 }
 
-// NAVIGATOR VIEW (FULL MAP)
+// NAVIGATOR VIEW
 function drawFullMaze() {
   for (let y = 0; y < maze.length; y++) {
     for (let x = 0; x < maze[y].length; x++) {
-      if (maze[y][x] === 1) {
-        ctx.fillStyle = "white";
-      } else {
-        ctx.fillStyle = "black";
-      }
+      ctx.fillStyle = maze[y][x] === 1 ? "white" : "black";
       ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
     }
   }
@@ -99,7 +158,7 @@ function drawFullMaze() {
   ctx.fillRect(exit.x * tileSize, exit.y * tileSize, tileSize, tileSize);
 }
 
-// RUNNER VIEW (BLACK MAP)
+// RUNNER VIEW
 function drawDarkMaze() {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -110,8 +169,8 @@ function drawPlayer() {
   ctx.fillStyle = "red";
   ctx.beginPath();
   ctx.arc(
-    player.x * tileSize + tileSize/2,
-    player.y * tileSize + tileSize/2,
+    player.x * tileSize + tileSize / 2,
+    player.y * tileSize + tileSize / 2,
     10,
     0,
     Math.PI * 2
@@ -119,17 +178,17 @@ function drawPlayer() {
   ctx.fill();
 }
 
-// MOVEMENT (RUNNER ONLY)
-document.addEventListener("keydown", (e) => {
+// MOVEMENT FUNCTION (SHARED)
+function move(direction) {
   if (role !== "runner") return;
 
   let newX = player.x;
   let newY = player.y;
 
-  if (e.key === "ArrowUp") newY--;
-  if (e.key === "ArrowDown") newY++;
-  if (e.key === "ArrowLeft") newX--;
-  if (e.key === "ArrowRight") newX++;
+  if (direction === "up") newY--;
+  if (direction === "down") newY++;
+  if (direction === "left") newX--;
+  if (direction === "right") newX++;
 
   if (maze[newY][newX] === 0) {
     player.x = newX;
@@ -138,10 +197,17 @@ document.addEventListener("keydown", (e) => {
 
   // WIN CONDITION
   if (player.x === exit.x && player.y === exit.y) {
-    alert("You Escaped. But the game isn't over...");
+    alert("You Escaped... but the game is still watching.");
   }
-});
+}
 
+// KEYBOARD SUPPORT (DESKTOP)
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowUp") move("up");
+  if (e.key === "ArrowDown") move("down");
+  if (e.key === "ArrowLeft") move("left");
+  if (e.key === "ArrowRight") move("right");
+});
 </script>
 
 </body>
