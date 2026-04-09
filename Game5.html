@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Maze</title>
+
+<style>
+  body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+  }
+
+  canvas {
+    border: 2px solid white;
+    margin-top: 20px;
+  }
+
+  button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Are You Playing The Game?</h1>
+<h2>Choose Your Role</h2>
+
+<button onclick="startGame('runner')">Runner</button>
+<button onclick="startGame('navigator')">Navigator</button>
+
+<canvas id="gameCanvas" width="500" height="500"></canvas>
+
+<script>
+
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+let role = "";
+let tileSize = 50;
+
+// 1 = wall, 0 = path
+const maze = [
+  [1,1,1,1,1,1,1,1,1,1],
+  [1,0,0,0,1,0,0,0,0,1],
+  [1,0,1,0,1,0,1,1,0,1],
+  [1,0,1,0,0,0,0,1,0,1],
+  [1,0,1,1,1,1,0,1,0,1],
+  [1,0,0,0,0,1,0,1,0,1],
+  [1,1,1,1,0,1,0,1,0,1],
+  [1,0,0,1,0,0,0,1,0,1],
+  [1,0,0,0,0,1,0,0,0,1],
+  [1,1,1,1,1,1,1,1,1,1]
+];
+
+let player = { x: 1, y: 1 };
+const exit = { x: 8, y: 8 };
+
+function startGame(selectedRole) {
+  role = selectedRole;
+  document.querySelectorAll("button").forEach(b => b.style.display = "none");
+  draw();
+}
+
+// DRAW FUNCTION
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (role === "navigator") {
+    drawFullMaze();
+  } else if (role === "runner") {
+    drawDarkMaze();
+  }
+
+  drawPlayer();
+
+  requestAnimationFrame(draw);
+}
+
+// NAVIGATOR VIEW (FULL MAP)
+function drawFullMaze() {
+  for (let y = 0; y < maze.length; y++) {
+    for (let x = 0; x < maze[y].length; x++) {
+      if (maze[y][x] === 1) {
+        ctx.fillStyle = "white";
+      } else {
+        ctx.fillStyle = "black";
+      }
+      ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+    }
+  }
+
+  // Exit
+  ctx.fillStyle = "green";
+  ctx.fillRect(exit.x * tileSize, exit.y * tileSize, tileSize, tileSize);
+}
+
+// RUNNER VIEW (BLACK MAP)
+function drawDarkMaze() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+// PLAYER
+function drawPlayer() {
+  ctx.fillStyle = "red";
+  ctx.beginPath();
+  ctx.arc(
+    player.x * tileSize + tileSize/2,
+    player.y * tileSize + tileSize/2,
+    10,
+    0,
+    Math.PI * 2
+  );
+  ctx.fill();
+}
+
+// MOVEMENT (RUNNER ONLY)
+document.addEventListener("keydown", (e) => {
+  if (role !== "runner") return;
+
+  let newX = player.x;
+  let newY = player.y;
+
+  if (e.key === "ArrowUp") newY--;
+  if (e.key === "ArrowDown") newY++;
+  if (e.key === "ArrowLeft") newX--;
+  if (e.key === "ArrowRight") newX++;
+
+  if (maze[newY][newX] === 0) {
+    player.x = newX;
+    player.y = newY;
+  }
+
+  // WIN CONDITION
+  if (player.x === exit.x && player.y === exit.y) {
+    alert("You Escaped. But the game isn't over...");
+  }
+});
+
+</script>
+
+</body>
+</html>
