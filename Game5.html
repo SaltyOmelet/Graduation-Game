@@ -200,10 +200,24 @@ function move(direction) {
   if (direction === "left") newX--;
   if (direction === "right") newX++;
 
-  if (maze[newY][newX] === 0) {
-    player.x = newX;
-    player.y = newY;
+  // CHECK OUT OF BOUNDS OR WALL
+  const hitWall =
+    newY < 0 ||
+    newY >= maze.length ||
+    newX < 0 ||
+    newX >= maze[0].length ||
+    maze[newY][newX] === 1;
+
+  if (hitWall) {
+    // RESET TO START
+    player.x = 1;
+    player.y = 1;
+    return;
   }
+
+  // VALID MOVE
+  player.x = newX;
+  player.y = newY;
 
   // WIN CONDITION
   if (player.x === exit.x && player.y === exit.y) {
