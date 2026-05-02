@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Final Assessment</title>
+<title>Game 1</title>
+
 <style>
 body{
   font-family: "Times New Roman", serif;
@@ -14,6 +15,7 @@ body{
   min-height:100vh;
   margin:0;
 }
+
 .container{
   background:white;
   padding:40px;
@@ -22,28 +24,32 @@ body{
   border:1px solid #ccc;
   box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
+
 .header{
   text-align:center;
   margin-bottom:30px;
 }
+
 .header h1{
   margin:0;
   font-size:24px;
 }
+
 .header p{
   margin:4px 0;
   font-size:14px;
 }
+
 .question{
   margin-top:20px;
   font-size:18px;
 }
+
 .equations{
   margin:20px 0;
   font-size:20px;
 }
 
-/* Mobile-friendly input */
 input{
   padding:14px;
   width:100%;
@@ -65,19 +71,15 @@ button{
   font-weight:bold;
 }
 
+/* Hidden riddle section */
 #qr{
   display:none;
   margin-top:30px;
   text-align:left;
 }
-
-.qr-image{
-  width:260px;
-  max-width:100%;
-}
-
 </style>
 </head>
+
 <body>
 
 <div class="container">
@@ -105,21 +107,39 @@ Solve for <strong>x</strong>.
 
 <div id="result"></div>
 
+<!-- RIDDLE SECTION (hidden until correct) -->
 <div id="qr">
+
 <p><strong>Nice.</strong></p>
 <p>You're still playing.<br><br></p>
-
+<p>Solve the riddle to get to the next level.<br><br></p>
+  
 <p>Sometimes games hide in plain sight.</p>
 <p>Even now people are watching</p>
 <p>Everyone assumes nothing is happening.</p>
 <p>Keeping looking.</p>
 <p>🦁 + 🦅 = ?</p>
+<p> <br><br> </p> 
+<p> Once solved, this phrase will give you access to the next level. </p>
+<p> “Memory holds the path forward.” </p>
+
+<!-- HINT BUTTON -->
+<button onclick="toggleHints()" id="hintBtn">
+Show Hints
+</button>
+
+<!-- HINT BOX -->
+<div id="hints" style="display:none; margin-top:15px; font-size:14px; line-height:1.6;">
+  <p><strong>Hint 1:</strong> Letters matter, “Something is being spelled out using the structure of the message.”</p>
+  <p><strong>Hint 2:</strong> Mythological Creature.</p>
+</div>
 
 </div>
 
 </div>
 
 <script>
+
 function checkAnswer(){
 
 let input = document.getElementById("answer").value
@@ -129,12 +149,30 @@ let input = document.getElementById("answer").value
 let correct = "4 5 7 12";
 
 if(input === correct){
- document.getElementById("result").innerText="";
- document.getElementById("qr").style.display="block";
+  document.getElementById("result").innerText = "";
+  document.getElementById("qr").style.display = "block";
+  document.getElementById("hints").style.display = "none";
+  document.getElementById("hintBtn").innerText = "Show Hints";
 }else{
- document.getElementById("result").innerText="Incorrect. Check your solutions.";
+  document.getElementById("result").innerText = "Incorrect. Check your solutions.";
 }
 }
+
+function toggleHints(){
+
+let hints = document.getElementById("hints");
+let btn = document.getElementById("hintBtn");
+
+if(hints.style.display === "none"){
+  hints.style.display = "block";
+  btn.innerText = "Hide Hints";
+}else{
+  hints.style.display = "none";
+  btn.innerText = "Show Hints";
+}
+
+}
+
 </script>
 
 </body>
